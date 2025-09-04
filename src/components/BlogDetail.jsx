@@ -7,6 +7,7 @@ import { BLOCKS, INLINES } from "@contentful/rich-text-types";
 function BlogDetail() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
+  const [allPosts, setAllPosts] = useState([]);
 
   useEffect(() => {
     const client = createClient({
@@ -14,15 +15,20 @@ function BlogDetail() {
       accessToken: import.meta.env.VITE_CONTENTFUL_ACCESS_TOKEN,
     });
 
+    // Fetch ALL posts (ordered by date)
     client
       .getEntries({
         content_type: "blogPost",
-        "fields.slug": slug,
+        order: "-fields.date", // newest first
       })
       .then((response) => {
-        if (response.items.length > 0) {
-          setPost(response.items[0]);
-        }
+        setAllPosts(response.items);
+
+        // Find the current post
+        const current = response.items.find(
+          (item) => item.fields.slug === slug
+        );
+        if (current) setPost(current);
       })
       .catch(console.error);
   }, [slug]);
@@ -36,6 +42,11 @@ function BlogDetail() {
   }
 
   const { title, date, content, image } = post.fields;
+
+  // Find prev/next
+  const currentIndex = allPosts.findIndex((item) => item.fields.slug === slug);
+  const prevPost = allPosts[currentIndex + 1]; // older
+  const nextPost = allPosts[currentIndex - 1]; // newer
 
   // ✅ Custom rich text rendering
   const options = {
@@ -97,13 +108,40 @@ function BlogDetail() {
         {documentToReactComponents(content, options)}
       </div>
 
-      {/* ✅ Back to Blog Button */}
-      <div className="text-center">
+      {/* ✅ Navigation buttons */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-12">
+        {prevPost && (
+          <Link
+            to={`/blog/${prevPost.fields.slug}`}
+            className="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition"
+          >
+            ← {prevPost.fields.title}
+          </Link>
+        )}
+
+        {nextPost && (
+          <Link
+            to={`/blog/${nextPost.fields.slug}`}
+            className="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition ml-auto"
+          >
+            {nextPost.fields.title} →
+          </Link>
+        )}
+      </div>
+
+      {/* ✅ Back buttons */}
+      <div className="flex justify-center gap-4 mt-12">
         <Link
           to="/blog"
-          className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-green-700 transition"
+          className="bg-green-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-green-700 transition"
         >
           ← Back to Blog
+        </Link>
+        <Link
+          to="/"
+          className="bg-gray-700 text-white px-6 py-3 rounded-lg shadow-md hover:bg-gray-800 transition"
+        >
+          ⌂ Back to Home
         </Link>
       </div>
     </article>

@@ -12,12 +12,12 @@ function Services() {
     },
     {
       title: "Buy Furniture",
-      desc: "Affordable new and refurbished office furniture.",
+      desc: "We buy used office furniture at fair prices.",
       icon: <FaChair className="text-green-600 text-4xl mb-4" />,
     },
     {
       title: "Sell Furniture",
-      desc: "We buy used office furniture at fair prices.",
+      desc: "Affordable new and refurbished office furniture.",
       icon: <FaDollarSign className="text-green-600 text-4xl mb-4" />,
     },
   ];
@@ -42,11 +42,11 @@ function Services() {
             <motion.div
               key={i}
               className="bg-white text-gray-800 p-6 rounded-lg shadow-lg text-center"
-              initial={{ opacity: 0, y: 50 }} // Start hidden & below
-              whileInView={{ opacity: 1, y: 0 }} // Animate on scroll
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.6, delay: i * 0.2 }} // Staggered animation
-              whileHover={{ scale: 1.05, boxShadow: "0px 10px 20px rgba(0,0,0,0.2)" }} // Hover effect
+              transition={{ duration: 0.6, delay: i * 0.2 }}
+              whileHover={{ scale: 1.05, boxShadow: "0px 10px 20px rgba(0,0,0,0.2)" }}
             >
               {service.icon}
               <h3 className="text-xl font-semibold mb-2 text-green-600">
@@ -55,6 +55,16 @@ function Services() {
               <p className="text-gray-600">{service.desc}</p>
             </motion.div>
           ))}
+        </div>
+
+        {/* ✅ Call to Action */}
+        <div className="text-center mt-12">
+          <a
+            href="#contact"
+            className="inline-block bg-green-600 text-white px-8 py-3 rounded-lg shadow-md hover:bg-green-700 transition text-lg font-semibold"
+          >
+            Contact Us Today
+          </a>
         </div>
       </div>
     </section>
