@@ -14,11 +14,12 @@ function Contact() {
 
     emailjs
       .sendForm(
-        "YOUR_SERVICE_ID",
-        "YOUR_TEMPLATE_ID",
+        import.meta.env.VITE_EMAILJS_SERVICE_ID, // e.g. service_123abc
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID, // e.g. template_abc123
         form.current,
-        "YOUR_PUBLIC_KEY"
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY // e.g. AbCdEfGh12345
       )
+
       .then(
         () => {
           setStatus("✅ Message sent successfully!");
