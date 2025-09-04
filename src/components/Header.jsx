@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
-import ScrollLink from "./ScrollLink"; // ✅ new import
+import { Link, useLocation } from "react-router-dom";
+import ScrollLink from "./ScrollLink"; // ✅ helper for smooth scroll + routing
 import logo from "../assets/logo.png";
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+  const location = useLocation();
 
   const navLinks = [
     { name: "Home", href: "#home", type: "anchor" },
@@ -17,14 +19,36 @@ function Header() {
     { name: "Contact", href: "#contact", type: "anchor" },
   ];
 
+  // ✅ Track which section is in view
+  useEffect(() => {
+    if (location.pathname !== "/") return; // only run on homepage
+
+    const sections = document.querySelectorAll("section[id]");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.6 } // section is active when 60% visible
+    );
+
+    sections.forEach((sec) => observer.observe(sec));
+    return () => observer.disconnect();
+  }, [location.pathname]);
+
   return (
     <header className="bg-white shadow sticky top-0 z-50">
       <nav className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+        {/* Logo */}
         <div className="flex items-center gap-2">
           <img src={logo} alt="SuKing Logo" className="h-10 w-auto" />
           <h1 className="text-2xl font-bold text-green-600">SuKing</h1>
         </div>
 
+        {/* Desktop Nav */}
         <ul className="hidden md:flex gap-6 text-gray-700">
           {navLinks.map((link, i) => (
             <motion.li
@@ -36,12 +60,23 @@ function Header() {
               {link.type === "anchor" ? (
                 <ScrollLink
                   to={link.href}
-                  className="hover:text-green-600 transition-colors"
+                  className={`transition-colors ${
+                    activeSection === link.href.replace("#", "")
+                      ? "text-green-600 font-semibold"
+                      : "hover:text-green-600"
+                  }`}
                 >
                   {link.name}
                 </ScrollLink>
               ) : (
-                <Link to={link.href} className="hover:text-green-600 transition-colors">
+                <Link
+                  to={link.href}
+                  className={`transition-colors ${
+                    location.pathname.startsWith("/blog")
+                      ? "text-green-600 font-semibold"
+                      : "hover:text-green-600"
+                  }`}
+                >
                   {link.name}
                 </Link>
               )}
@@ -85,7 +120,11 @@ function Header() {
                   {link.type === "anchor" ? (
                     <ScrollLink
                       to={link.href}
-                      className="hover:text-green-600"
+                      className={`${
+                        activeSection === link.href.replace("#", "")
+                          ? "text-green-600 font-semibold"
+                          : "hover:text-green-600"
+                      }`}
                       onClick={() => setIsOpen(false)}
                     >
                       {link.name}
@@ -93,7 +132,11 @@ function Header() {
                   ) : (
                     <Link
                       to={link.href}
-                      className="hover:text-green-600"
+                      className={`${
+                        location.pathname.startsWith("/blog")
+                          ? "text-green-600 font-semibold"
+                          : "hover:text-green-600"
+                      }`}
                       onClick={() => setIsOpen(false)}
                     >
                       {link.name}

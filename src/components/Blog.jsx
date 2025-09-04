@@ -21,9 +21,22 @@ function Blog() {
   return (
     <section id="blog" className="py-16 bg-gray-100">
       <div className="max-w-6xl mx-auto px-4">
+        {/* ✅ Back to Home */}
+        <div className="mb-8 text-left">
+          <Link
+            to="/"
+            className="inline-block bg-gray-700 text-white px-5 py-2 rounded-lg shadow-md hover:bg-gray-800 transition"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+
+        {/* Blog Title */}
         <h2 className="text-3xl font-bold text-center mb-10 text-green-600">
           Our Blog
         </h2>
+
+        {/* Blog Grid */}
         <div className="grid md:grid-cols-3 gap-8">
           {posts.map((post, i) => {
             const { title, date, excerpt, image, slug } = post.fields;
