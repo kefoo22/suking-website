@@ -32,7 +32,7 @@ function Header() {
           }
         });
       },
-      { threshold: 0.6 } // section is active when 60% visible
+      { threshold: 0.6 }
     );
 
     sections.forEach((sec) => observer.observe(sec));
@@ -101,51 +101,72 @@ function Header() {
       {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 120, damping: 20 }}
-            className="fixed top-0 right-0 h-full w-2/3 bg-white shadow-lg z-50 md:hidden"
-          >
-            <div className="flex justify-between items-center px-6 py-4 border-b">
-              <h2 className="text-xl font-bold text-green-600">SuKing</h2>
-              <button onClick={() => setIsOpen(false)}>
-                <X size={28} className="text-gray-700" />
-              </button>
-            </div>
-            <ul className="flex flex-col gap-6 px-6 py-8 text-gray-700">
-              {navLinks.map((link, i) => (
-                <motion.li key={i} whileHover={{ x: 5 }} className="text-lg">
-                  {link.type === "anchor" ? (
-                    <ScrollLink
-                      to={link.href}
-                      className={`${
-                        activeSection === link.href.replace("#", "")
-                          ? "text-green-600 font-semibold"
-                          : "hover:text-green-600"
-                      }`}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {link.name}
-                    </ScrollLink>
-                  ) : (
-                    <Link
-                      to={link.href}
-                      className={`${
-                        location.pathname.startsWith("/blog")
-                          ? "text-green-600 font-semibold"
-                          : "hover:text-green-600"
-                      }`}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {link.name}
-                    </Link>
-                  )}
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
+          <>
+            {/* ✅ Frosted Overlay */}
+            <motion.div
+              initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+              animate={{ opacity: 1, backdropFilter: "blur(4px)" }}
+              exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+              transition={{ duration: 0.4 }}
+              className="fixed inset-0 bg-black/40 z-40 md:hidden"
+              onClick={() => setIsOpen(false)}
+            />
+
+            {/* ✅ Frosted Glass Menu */}
+            <motion.div
+              initial={{ x: "100%", opacity: 0, backdropFilter: "blur(0px)" }}
+              animate={{ x: 0, opacity: 1, backdropFilter: "blur(12px)" }}
+              exit={{ x: "100%", opacity: 0, backdropFilter: "blur(0px)" }}
+              transition={{
+                type: "spring",
+                stiffness: 120,
+                damping: 20,
+                opacity: { duration: 0.3 },
+              }}
+              className="fixed top-0 right-0 h-full w-2/3 
+                         bg-white/30 backdrop-blur-md 
+                         border-l border-white/20 
+                         shadow-lg z-50 md:hidden"
+            >
+              <div className="flex justify-between items-center px-6 py-4 border-b border-white/30">
+                <h2 className="text-xl font-bold text-green-600">SuKing</h2>
+                <button onClick={() => setIsOpen(false)}>
+                  <X size={28} className="text-gray-700" />
+                </button>
+              </div>
+              <ul className="flex flex-col gap-6 px-6 py-8 text-gray-800 font-medium">
+                {navLinks.map((link, i) => (
+                  <motion.li key={i} whileHover={{ x: 5 }} className="text-lg">
+                    {link.type === "anchor" ? (
+                      <ScrollLink
+                        to={link.href}
+                        className={`${
+                          activeSection === link.href.replace("#", "")
+                            ? "text-green-600 font-semibold"
+                            : "hover:text-green-600"
+                        }`}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {link.name}
+                      </ScrollLink>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className={`${
+                          location.pathname.startsWith("/blog")
+                            ? "text-green-600 font-semibold"
+                            : "hover:text-green-600"
+                        }`}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {link.name}
+                      </Link>
+                    )}
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </header>

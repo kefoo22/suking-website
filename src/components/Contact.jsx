@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import emailjs from "@emailjs/browser";
 import heroBg from "../assets/contact-bg.jpg"; // ✅ adjust path if needed
 
@@ -6,6 +6,16 @@ function Contact() {
   const form = useRef();
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const [chairQuery, setChairQuery] = useState("");
+
+  // ✅ Extract ?chair= query parameter
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.hash.split("?")[1]);
+    const chair = params.get("chair");
+    if (chair) {
+      setChairQuery(`Hello, I'm interested in the chair: ${chair}`);
+    }
+  }, []);
 
   const sendEmail = (e) => {
     e.preventDefault();
@@ -14,12 +24,11 @@ function Contact() {
 
     emailjs
       .sendForm(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID, // e.g. service_123abc
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID, // e.g. template_abc123
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
         form.current,
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY // e.g. AbCdEfGh12345
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
       )
-
       .then(
         () => {
           setStatus("✅ Message sent successfully!");
@@ -36,7 +45,7 @@ function Contact() {
     <section
       id="contact"
       className="relative py-16 bg-cover bg-center"
-      style={{ backgroundImage: `url(${heroBg})` }} // ✅ imported image
+      style={{ backgroundImage: `url(${heroBg})` }}
     >
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/40"></div>
@@ -71,6 +80,8 @@ function Contact() {
             placeholder="Your Message"
             rows="5"
             required
+            value={chairQuery} // ✅ Pre-fill with query if exists
+            onChange={(e) => setChairQuery(e.target.value)}
             className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
           ></textarea>
           <button
