@@ -1,12 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import emailjs from "@emailjs/browser";
-import heroBg from "../assets/contact-bg.jpg"; // ✅ adjust path if needed
+import ReCAPTCHA from "react-google-recaptcha";
+import heroBg from "../assets/contact-bg.jpg";
 
 function Contact() {
   const form = useRef();
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [chairQuery, setChairQuery] = useState("");
+  const [captchaToken, setCaptchaToken] = useState(null);
 
   // ✅ Extract ?chair= query parameter
   useEffect(() => {
@@ -17,10 +19,39 @@ function Contact() {
     }
   }, []);
 
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
   const sendEmail = (e) => {
     e.preventDefault();
     setLoading(true);
     setStatus("");
+
+    const email = form.current.user_email.value;
+    const honeypot = form.current.hidden_field.value;
+
+    // ✅ Honeypot anti-spam
+    if (honeypot) {
+      setStatus("❌ Spam detected.");
+      setLoading(false);
+      return;
+    }
+
+    // ✅ Email format validation
+    if (!validateEmail(email)) {
+      setStatus("❌ Please enter a valid email address.");
+      setLoading(false);
+      return;
+    }
+
+    // ✅ Check reCAPTCHA
+    if (!captchaToken) {
+      setStatus("❌ Please verify that you are human.");
+      setLoading(false);
+      return;
+    }
 
     emailjs
       .sendForm(
@@ -33,6 +64,7 @@ function Contact() {
         () => {
           setStatus("✅ Message sent successfully!");
           form.current.reset();
+          setCaptchaToken(null); // reset captcha
         },
         () => {
           setStatus("❌ Failed to send message. Please try again.");
@@ -61,6 +93,15 @@ function Contact() {
           onSubmit={sendEmail}
           className="grid gap-4 bg-white/30 backdrop-blur-md p-6 rounded-lg shadow-lg border border-white/40"
         >
+          {/* Honeypot field */}
+          <input
+            type="text"
+            name="hidden_field"
+            style={{ display: "none" }}
+            tabIndex="-1"
+            autoComplete="off"
+          />
+
           <input
             type="text"
             name="user_name"
@@ -80,10 +121,18 @@ function Contact() {
             placeholder="Your Message"
             rows="5"
             required
-            value={chairQuery} // ✅ Pre-fill with query if exists
+            value={chairQuery}
             onChange={(e) => setChairQuery(e.target.value)}
             className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
           ></textarea>
+
+          {/* ✅ Google reCAPTCHA */}
+          <ReCAPTCHA
+            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+            onChange={(token) => setCaptchaToken(token)}
+            onExpired={() => setCaptchaToken(null)}
+          />
+
           <button
             type="submit"
             disabled={loading}
@@ -93,7 +142,6 @@ function Contact() {
           </button>
         </form>
 
-        {/* Status message */}
         {status && (
           <p className="text-center mt-4 font-semibold">
             {status.startsWith("✅") ? (
