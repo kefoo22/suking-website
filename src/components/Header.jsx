@@ -14,6 +14,7 @@ function Header() {
     { name: "Home", href: "#home", type: "anchor" },
     { name: "About", href: "#about", type: "anchor" },
     { name: "Services", href: "#services", type: "anchor" },
+    { name: "Chairs", href: "#chairs", type: "anchor" }, // ✅ NEW
     { name: "Testimonials", href: "#testimonials", type: "anchor" },
     { name: "Blog", href: "/blog", type: "route" },
     { name: "Contact", href: "#contact", type: "anchor" },
@@ -145,7 +146,7 @@ function Header() {
                             ? "text-green-600 font-semibold"
                             : "hover:text-green-600"
                         }`}
-                        onClick={() => setIsOpen(false)}
+                        onClick={() => setIsOpen(false)} // ✅ closes on click
                       >
                         {link.name}
                       </ScrollLink>
@@ -157,7 +158,7 @@ function Header() {
                             ? "text-green-600 font-semibold"
                             : "hover:text-green-600"
                         }`}
-                        onClick={() => setIsOpen(false)}
+                        onClick={() => setIsOpen(false)} // ✅ closes on click
                       >
                         {link.name}
                       </Link>
